@@ -1,0 +1,36 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id         Int        @id @default(autoincrement())
+  email      String
+  password   String
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  associated Associate?
+
+  @@map("users")
+}
+
+model Associate {
+  id           Int      @id @default(autoincrement())
+  imgPerfil    String?
+  name         String
+  registration String   @unique
+  status       String
+  situation    String
+  birthday     DateTime
+  user         User?    @relation(fields: [userId], references: [id])
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  userId       Int?     @unique
+
+  @@map("associates")
+}
