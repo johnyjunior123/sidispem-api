@@ -26,15 +26,32 @@ export class AuthService {
     ) { }
 
     async signIn({ email, password }: ISignIn): Promise<IAuth> {
-        if (!email) {
-            new BadRequestException('E-mail inválido')
+        if (!email || !email.includes('@')) {
+            throw new BadRequestException('E-mail inválido');
         }
-        const user = new User(await this.usersService.findUserByEmail(email))
-        if (!user) throw new NotFoundException();
-        if (!user.comparePassword(password)) {
-            throw new UnauthorizedException();
+
+        const userData = await this.usersService.findUserByEmail(email);
+        if (!userData) {
+            throw new NotFoundException('Usuário não encontrado');
         }
-        const payload = { sub: user.id, name: user.name };
+
+        const user = new User(userData);
+        console.log('Senha fornecida:', password);
+        console.log('Hash armazenado:', user.password); // ou user.passwordHash
+        console.log('Comparação:', user.comparePassword(password));
+
+        const isPasswordValid = await user.comparePassword(password);
+        if (!isPasswordValid) {
+            throw new UnauthorizedException('Senha incorreta');
+        }
+
+        const payload = {
+            sub: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role 
+        };
+
         return {
             user: user.toSafe(),
             token: await this.jwtService.signAsync(payload),
