@@ -1,8 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Res, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import type { Response } from "express";
-import { type CreateAssociateDTO, CreateAssociateSchema, UpdateAssociateSchema } from "src/dto/associate.dto";
+import { type CreateAssociateDTO, CreateAssociateSchema, type UpdateAssociateDTO, UpdateAssociateSchema } from "src/dto/associate.dto";
 import { AssociateService } from "src/services/associate.service";
+
 
 @Controller('/associate')
 export class AssociateController {
@@ -11,6 +12,12 @@ export class AssociateController {
     @Get('/:id')
     async getAssociate(@Param('id') id: string, @Res() res: Response) {
         const associate = await this.associateService.get(Number(id))
+        return res.status(200).json(associate)
+    }
+
+    @Get('/validar/:registration')
+    async getAssociateByMatricula(@Param('registration') registration: string, @Res() res: Response) {
+        const associate = await this.associateService.getByMatricula(registration)
         return res.status(200).json(associate)
     }
 
@@ -36,7 +43,7 @@ export class AssociateController {
     @UseInterceptors(FileInterceptor('imgPerfil'))
     async updateAssociate(
         @UploadedFile() file: Express.Multer.File,
-        @Body() body: CreateAssociateDTO,
+        @Body() body: UpdateAssociateDTO,
         @Res() res: Response
     ) {
         const validated = UpdateAssociateSchema.parse(body);
@@ -48,5 +55,23 @@ export class AssociateController {
     async deleteAssociate(@Param('id') id: string, @Res() res: Response) {
         const result = await this.associateService.delete(Number(id))
         return res.status(200).json({ message: 'deleted successful' })
+    }
+
+    @Get('/:id/card')
+    async getCardAssociate(@Res() res: Response) {
+        const pdf = await this.associateService.gerarCarteirinha();
+
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': 'attachment; filename=carteirinha.pdf',
+        });
+
+        res.send(pdf);
+    }
+
+    @Get("/dashboard/all")
+    async getDataDashboard(@Res() res: Response) {
+        const data = await this.associateService.getAllDashboard()
+        res.status(200).json(data)
     }
 }

@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { AssociateModule } from './modules/associate.module';
+import { WorkspaceModule } from './modules/workspace.module';
+import { AppointmentModule } from './modules/appointment.module';
+import { UsersModule } from './modules/user.module';
+import { AuthModule } from './modules/auth.module';
 
 @Module({
   imports: [
@@ -11,9 +13,13 @@ import { AssociateModule } from './modules/associate.module';
       isGlobal: true,
       cache: false,
     }),
-    AssociateModule
+    AssociateModule,
+    WorkspaceModule,
+    AppointmentModule,
+    UsersModule,
+    AuthModule
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule { }
