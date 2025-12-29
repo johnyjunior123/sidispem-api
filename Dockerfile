@@ -1,11 +1,26 @@
+# Use uma imagem base Node.js
 FROM node:22-alpine
+
+# Defina o diretório de trabalho dentro do contêiner
 WORKDIR /app
-RUN apk add --no-cache yarn
+
+# Copie o arquivo package.json e package-lock.json
 COPY package*.json ./
-COPY prisma ./prisma
-RUN yarn install --frozen-lockfile
+
+# Instale as dependências usando npm (já que você não usa yarn)
+RUN npm install --production
+
+# Copie o restante dos arquivos do projeto para o contêiner
 COPY . .
+
+# Gere as configurações do Prisma (caso use Prisma)
 RUN npx prisma generate
-RUN yarn build
+
+# Realize o build da aplicação
+RUN npm run build
+
+# Exponha a porta da aplicação (3000)
 EXPOSE 3000
-CMD ["yarn", "start:prod"]
+
+# Defina o comando para rodar a aplicação em produção
+CMD ["node", "dist/main.js"]

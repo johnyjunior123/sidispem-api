@@ -15,7 +15,7 @@ services:
     depends_on:
       - db
     restart: always
-
+    command: ["npm", "run", "start:prod"] # Executando o comando start:prod
   db:
     image: postgres:latest
     container_name: postgres
