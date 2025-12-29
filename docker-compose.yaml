@@ -1,6 +1,6 @@
 # Production
 services:
-  app:
+  app_sidispem:
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -9,14 +9,14 @@ services:
       - JWT_SECRETS=${JWT_SECRETS}
       - VERIFY_CREATE_USER=${VERIFY_CREATE_USER}
     ports:
-      - "3000:3000"
+      - "3002:3001"
     extra_hosts:
       - "host.docker.internal:172.17.0.1"
     depends_on:
-      - db
+      - db_sidispem
     restart: always
     command: ["npm", "run", "start:prod"] # Executando o comando start:prod
-  db:
+  db_sidispem:
     image: postgres:latest
     container_name: postgres
     environment:
