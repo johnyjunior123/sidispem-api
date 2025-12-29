@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Res, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import type { Response } from "express";
+import { errors_message } from "src/constants/errors.message";
 import { type CreateAssociateDTO, CreateAssociateSchema, type UpdateAssociateDTO, UpdateAssociateSchema } from "src/dto/associate.dto";
 import { AssociateService } from "src/services/associate.service";
 
@@ -18,6 +19,9 @@ export class AssociateController {
     @Get('/validar/:registration')
     async getAssociateByMatricula(@Param('registration') registration: string, @Res() res: Response) {
         const associate = await this.associateService.getByMatricula(registration)
+        if (!associate) {
+            return res.status(400).json({ message: errors_message.missing_data })
+        }
         return res.status(200).json(associate)
     }
 
