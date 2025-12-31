@@ -187,9 +187,6 @@ export class AssociateService {
     }
 
     async getAllDashboard() {
-        /** =========================
-         * Associates by Type (situation)
-         * ========================= */
         const associatesByTypeRaw = await this.prismaService.associate.groupBy({
             by: ['situation'],
             _count: {
@@ -219,9 +216,6 @@ export class AssociateService {
             associatesByType.commissioned +
             associatesByType.affective
 
-        /** =========================
-         * Scheduling Data (status)
-         * ========================= */
         const schedulingRaw = await this.prismaService.associate.groupBy({
             by: ['status'],
             _count: {
@@ -253,9 +247,6 @@ export class AssociateService {
             },
         ]
 
-        /** =========================
-         * Associates by Location (workspace)
-         * ========================= */
         const associatesByLocationRaw =
             await this.prismaService.workspace.findMany({
                 select: {

@@ -1,4 +1,7 @@
 import { z } from 'zod'
+import { toZonedTime } from 'date-fns-tz'
+
+const timeZone = 'America/Sao_Paulo'
 
 export type AppointmentFront = {
     id: string | undefined
@@ -10,23 +13,25 @@ export type AppointmentFront = {
 }
 
 export const CreateAppointmentSchema = z.object({
-    description: z.string().min(1, 'Descrição obrigatória'),
+    description: z.string().min(1),
 
     start: z.string()
         .min(1)
-        .transform(date => new Date(date)),
+        .transform(date =>
+            toZonedTime(date, timeZone)
+        ),
 
     end: z.string()
         .min(1)
-        .transform(date => new Date(date)),
+        .transform(date =>
+            toZonedTime(date, timeZone)
+        ),
 
     workspaceId: z.string()
-        .min(1)
-        .transform(id => Number(id)),
+        .transform(Number),
 
     userId: z.string()
-        .min(1)
-        .transform(id => Number(id)),
+        .transform(Number),
 })
 
 export const UpdateAppointmentSchema = CreateAppointmentSchema.extend({
