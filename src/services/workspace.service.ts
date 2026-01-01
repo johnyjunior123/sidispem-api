@@ -1,6 +1,7 @@
 import { PrismaService } from "./prisma.service";
 import { Injectable } from "@nestjs/common";
 import { CreateWorkspaceDTO, Workspace } from "src/dto/workspace.dto";
+import { BadRequestError } from "src/filter/errors/badrequesterrors";
 
 @Injectable()
 export class WorkspaceService {
@@ -51,6 +52,18 @@ export class WorkspaceService {
     }
 
     async delete(id: number) {
-        await this.prismaService.workspace.delete({ where: { id } })
+        const workspace = await this.prismaService.workspace.findFirst({
+            where: { id }, select: {
+                _count: {
+                    select: {
+                        associates: true
+                    }
+                }
+            }
+        })
+        if (workspace?._count && workspace._count.associates > 0) throw new BadRequestError("Não é possível deletar um local de trabalho que possua associados cadastrados.")
+        await this.prismaService.workspace.delete({
+            where: { id }
+        })
     }
 }

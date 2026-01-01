@@ -30,7 +30,7 @@ export class AppointmentController {
             userId: appointment.receptor,
         })
         const newAppointment = await this.appointmentService.update(parsed)
-        return res.status(201).json(newAppointment)
+        return res.status(200).json(newAppointment)
     }
 
     @Get('/')

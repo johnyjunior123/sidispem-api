@@ -1,10 +1,5 @@
-import {
-    ExceptionFilter,
-    Catch,
-    ArgumentsHost,
-    HttpException,
-    HttpStatus,
-} from '@nestjs/common';
+import { Catch, ExceptionFilter, ArgumentsHost, HttpException, HttpStatus } from "@nestjs/common";
+import { BadRequestError } from "./errors/badrequesterrors";
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -16,10 +11,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
             exception instanceof HttpException
                 ? exception.getStatus()
                 : HttpStatus.INTERNAL_SERVER_ERROR;
+
         console.error('EXCEPTION:', {
             message: exception.message,
             stack: exception.stack,
         });
+
+        // Prisma Client Error
         if (exception.code && exception.clientVersion) {
             return response.status(400).json({
                 statusCode: 400,
@@ -28,6 +26,17 @@ export class AllExceptionsFilter implements ExceptionFilter {
                 meta: exception.meta,
             });
         }
+
+        // BadRequestError personalizado
+        if (exception instanceof BadRequestError) {
+            return response.status(HttpStatus.BAD_REQUEST).json({
+                statusCode: HttpStatus.BAD_REQUEST,
+                error: 'Bad Request',
+                message: exception.message,
+            });
+        }
+
+        // Default
         response.status(status).json({
             statusCode: status,
             timestamp: new Date().toISOString(),
