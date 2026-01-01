@@ -30,6 +30,8 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     build-essential \
     libvips-dev \
+    --fix-missing \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Copie apenas os arquivos necessários do build
