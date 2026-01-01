@@ -1,8 +1,6 @@
 # ---------- Build Stage ----------
-# Use Node.js Debian base (mais fácil para Sharp)
 FROM node:22-bullseye AS build
 
-# Defina o diretório de trabalho
 WORKDIR /app
 
 # Copie arquivos de dependências
@@ -27,6 +25,12 @@ RUN npm run build
 FROM node:22-bullseye
 
 WORKDIR /app
+
+# Instalar dependências de compilação necessárias para o sharp
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libvips-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copie apenas os arquivos necessários do build
 COPY package*.json ./
