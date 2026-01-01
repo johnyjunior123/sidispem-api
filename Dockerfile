@@ -1,29 +1,43 @@
-# Use uma imagem base Node.js
-FROM node:22-alpine
+# ---------- Build Stage ----------
+# Use Node.js Debian base (mais fácil para Sharp)
+FROM node:22-bullseye AS build
 
-# Defina o diretório de trabalho dentro do contêiner
+# Defina o diretório de trabalho
 WORKDIR /app
 
-# Copie o arquivo package.json e package-lock.json
+# Copie arquivos de dependências
 COPY package*.json ./
 
 # Instale o NestJS CLI globalmente
 RUN npm install -g @nestjs/cli
 
-# Instale as dependências do projeto
-RUN npm install --production=false
+# Instale todas as dependências (dev incluídas)
+RUN npm install --legacy-peer-deps
 
-# Copie o restante dos arquivos do projeto para o contêiner
+# Copie o restante do projeto
 COPY . .
 
-# Gere as configurações do Prisma (caso use Prisma)
+# Gere arquivos do Prisma (se estiver usando)
 RUN npx prisma generate
 
-# Realize o build da aplicação
+# Compile a aplicação
 RUN npm run build
 
-# Exponha a porta da aplicação (3000)
+# ---------- Production Stage ----------
+FROM node:22-bullseye
+
+WORKDIR /app
+
+# Copie apenas os arquivos necessários do build
+COPY package*.json ./
+RUN npm install --production --legacy-peer-deps
+
+# Copie o build do projeto
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/prisma ./prisma
+
+# Exponha a porta da aplicação
 EXPOSE 3000
 
-# Defina o comando para rodar a aplicação em produção
+# Comando padrão de produção
 CMD ["node", "dist/main.js"]
