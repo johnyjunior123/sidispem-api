@@ -9,7 +9,6 @@ export const UpdateWorkspaceSchema = CreateWorkspaceSchema.extend({
     id: z.number()
 })
 
-
 export type CreateWorkspaceDTO = z.infer<typeof CreateWorkspaceSchema>
 export type UpdateWorkspaceDTO = z.infer<typeof UpdateWorkspaceSchema>
 

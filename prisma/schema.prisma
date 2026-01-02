@@ -30,7 +30,7 @@ model Associate {
   registration String     @unique
   status       String
   situation    String
-  birthday     DateTime
+  birthday     DateTime?
   user         User?      @relation(fields: [userId], references: [id])
   created_at   DateTime   @default(now())
   updated_at   DateTime   @updatedAt

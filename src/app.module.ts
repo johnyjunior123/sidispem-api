@@ -5,6 +5,7 @@ import { WorkspaceModule } from './modules/workspace.module';
 import { AppointmentModule } from './modules/appointment.module';
 import { UsersModule } from './modules/user.module';
 import { AuthModule } from './modules/auth.module';
+import { ImportModule } from './modules/import.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { AuthModule } from './modules/auth.module';
     WorkspaceModule,
     AppointmentModule,
     UsersModule,
-    AuthModule
+    AuthModule,
+    ImportModule
   ],
   controllers: [],
   providers: [],
