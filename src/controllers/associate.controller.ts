@@ -61,18 +61,6 @@ export class AssociateController {
         return res.status(200).json({ message: 'deleted successful' })
     }
 
-    @Get('/:id/card')
-    async getCardAssociate(@Res() res: Response) {
-        const pdf = await this.associateService.gerarCarteirinha();
-
-        res.set({
-            'Content-Type': 'application/pdf',
-            'Content-Disposition': 'attachment; filename=carteirinha.pdf',
-        });
-
-        res.send(pdf);
-    }
-
     @Get("/dashboard/all")
     async getDataDashboard(@Res() res: Response) {
         const data = await this.associateService.getAllDashboard()
