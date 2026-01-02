@@ -3,11 +3,6 @@ import { PrismaService } from "./prisma.service";
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { v4 } from "uuid";
 import { Injectable } from "@nestjs/common";
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-import * as fs from 'fs';
-import sharp from "sharp";
-import path from "path";
-
 
 type CreateAssociateDTOWithoutIMGPerfil = Omit<CreateAssociateDTO, 'imgPerfil'> & {
     imgPerfil: string | null
@@ -125,65 +120,6 @@ export class AssociateService {
             }))
             await this.prismaService.associate.delete({ where: { id } })
         }
-    }
-
-    async gerarCarteirinha(): Promise<Buffer> {
-        const pdfPath = path.join(
-            process.cwd(),
-            'src/assets/carteirinha_modelo.pdf',
-        );
-        const fotoPath = path.join(
-            process.cwd(),
-            'src/assets/foto.jpg',
-        );
-        const pdfBytes = fs.readFileSync(pdfPath);
-        const originalImage = fs.readFileSync(fotoPath);
-        const jpegImage = await sharp(originalImage)
-            .resize(300, 400, { fit: 'cover' })
-            .jpeg({ quality: 90 })
-            .toBuffer();
-        const pdfDoc = await PDFDocument.load(pdfBytes);
-        const page = pdfDoc.getPages()[0];
-        const image = await pdfDoc.embedJpg(jpegImage);
-        const imageWidth = 90;
-        const imageHeight = 120;
-        page.drawImage(image, {
-            x: 40,
-            y: 260,
-            width: imageWidth,
-            height: imageHeight,
-        });
-        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-        page.drawText('João Silva', {
-            x: 150,
-            y: 340,
-            size: 12,
-            font,
-            color: rgb(0, 0, 0),
-        });
-        page.drawText('123456', {
-            x: 150,
-            y: 315,
-            size: 12,
-            font,
-            color: rgb(0, 0, 0),
-        });
-        page.drawText('ATIVO', {
-            x: 150,
-            y: 290,
-            size: 12,
-            font,
-            color: rgb(0, 0, 0),
-        });
-        page.drawText('12/2026', {
-            x: 150,
-            y: 265,
-            size: 12,
-            font,
-            color: rgb(0, 0, 0),
-        });
-        const finalPdf = await pdfDoc.save();
-        return Buffer.from(finalPdf);
     }
 
     async getAllDashboard() {

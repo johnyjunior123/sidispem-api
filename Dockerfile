@@ -1,33 +1,11 @@
-# ---------- Build Stage ----------
-FROM node:20-bullseye AS build
-
+FROM node:22-alpine
 WORKDIR /app
-
+RUN apk add --no-cache yarn
 COPY package*.json ./
-RUN npm install --legacy-peer-deps
-
+COPY prisma ./prisma
+RUN yarn install --frozen-lockfile
 COPY . .
-
 RUN npx prisma generate
-RUN npm run build
-
-
-# ---------- Production Stage ----------
-FROM node:20-bullseye
-
-WORKDIR /app
-
-# Runtime libs do sharp
-RUN apt-get update && apt-get install -y \
-    libvips \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# COPIA node_modules PRONTO (sharp OK)
-COPY --from=build /app/node_modules ./node_modules
-
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/prisma ./prisma
-COPY --from=build /app/package*.json ./
-
-CMD ["node", "dist/main.js"]
+RUN yarn build
+EXPOSE 3000
+CMD ["yarn", "start:prod"]
