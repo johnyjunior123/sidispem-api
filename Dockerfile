@@ -42,8 +42,5 @@ RUN npm install --production --legacy-peer-deps
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
 
-# Exponha a porta da aplicação
-EXPOSE 3000
-
 # Comando padrão de produção
 CMD ["node", "dist/main.js"]
