@@ -28,6 +28,8 @@ export class ImportController {
         @Body() body: AssociateImport,
         @Res() res: Response
     ) {
+        console.log(process.env.TOKEN_IMPORT)
+        console.log(body)
         if (body.token != process.env.TOKEN_IMPORT) {
             return res.status(400).json({ message: 'Not authorized' })
         }
