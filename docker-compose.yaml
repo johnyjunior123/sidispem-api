@@ -16,7 +16,6 @@ services:
     command: ["npm", "run", "start:prod"] # Executando o comando start:prod
   db_sidispem:
     image: postgres:latest
-    container_name: postgres
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
