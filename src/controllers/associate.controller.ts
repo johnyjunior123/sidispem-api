@@ -1,8 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Res, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Res, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import type { Response } from "express";
 import { errors_message } from "src/constants/errors.message";
 import { type CreateAssociateDTO, CreateAssociateSchema, type UpdateAssociateDTO, UpdateAssociateSchema } from "src/dto/associate.dto";
+import { JwtAuthGuard } from "src/filter/auth/jwt.auth.guard";
+import { Roles, UserRolesEnum } from "src/filter/auth/rbac";
+import { RolesGuard } from "src/filter/auth/roles.guard";
 import { AssociateService } from "src/services/associate.service";
 
 
@@ -11,6 +14,8 @@ export class AssociateController {
     constructor(private readonly associateService: AssociateService) { }
 
     @Get('/:id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRolesEnum.PRESIDENTE, UserRolesEnum.ATENDENTE)
     async getAssociate(@Param('id') id: string, @Res() res: Response) {
         const associate = await this.associateService.get(Number(id))
         return res.status(200).json(associate)
@@ -26,12 +31,16 @@ export class AssociateController {
     }
 
     @Get('/')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRolesEnum.PRESIDENTE, UserRolesEnum.ATENDENTE)
     async getAllAssociate(@Res() res: Response) {
         const associates = await this.associateService.getAll()
         return res.status(200).json(associates)
     }
 
     @Post('/')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRolesEnum.PRESIDENTE, UserRolesEnum.ATENDENTE)
     @UseInterceptors(FileInterceptor('imgPerfil'))
     async createAssociate(
         @UploadedFile() file: Express.Multer.File,
@@ -44,6 +53,8 @@ export class AssociateController {
     }
 
     @Put('/')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRolesEnum.PRESIDENTE, UserRolesEnum.ATENDENTE)
     @UseInterceptors(FileInterceptor('imgPerfil'))
     async updateAssociate(
         @UploadedFile() file: Express.Multer.File,
@@ -56,12 +67,16 @@ export class AssociateController {
     }
 
     @Delete('/:id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRolesEnum.PRESIDENTE, UserRolesEnum.ATENDENTE)
     async deleteAssociate(@Param('id') id: string, @Res() res: Response) {
         const result = await this.associateService.delete(Number(id))
         return res.status(200).json({ message: 'deleted successful' })
     }
 
     @Get("/dashboard/all")
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRolesEnum.PRESIDENTE, UserRolesEnum.ATENDENTE)
     async getDataDashboard(@Res() res: Response) {
         const data = await this.associateService.getAllDashboard()
         res.status(200).json(data)

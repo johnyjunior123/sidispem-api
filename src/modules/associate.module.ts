@@ -3,9 +3,10 @@ import { AssociateController } from 'src/controllers/associate.controller';
 import { AssociateImageController } from 'src/controllers/associate.image.controller';
 import { AssociateService } from 'src/services/associate.service';
 import { PrismaService } from 'src/services/prisma.service';
+import { AuthModule } from './auth.module';
 
 @Module({
-    imports: [],
+    imports: [AuthModule],
     controllers: [AssociateController, AssociateImageController],
     providers: [AssociateService, PrismaService],
     exports: [AssociateService]

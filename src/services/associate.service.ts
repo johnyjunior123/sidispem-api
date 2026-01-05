@@ -4,6 +4,13 @@ import { DeleteObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client
 import { v4 } from "uuid";
 import { Injectable } from "@nestjs/common";
 
+const mimeToExt = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/gif': 'gif',
+    'image/webp': 'webp',
+}
+
 type CreateAssociateDTOWithoutIMGPerfil = Omit<CreateAssociateDTO, 'imgPerfil'> & {
     imgPerfil: string | null
 }
@@ -26,10 +33,12 @@ export class AssociateService {
             },
         });
     }
+
     async create(associate: CreateAssociateDTO, imgPerfil?: Express.Multer.File) {
         let newAssociate: CreateAssociateDTOWithoutIMGPerfil
         if (imgPerfil) {
-            const Key = `${v4()}.jpg`
+            const ext = mimeToExt[imgPerfil.mimetype] || 'jpg'
+            const Key = `${v4()}.${ext}`
             this.s3.send(new PutObjectCommand({
                 Key,
                 Bucket: process.env.BUCKET_NAME,
@@ -65,7 +74,8 @@ export class AssociateService {
             omit: { userId: true }
         })
         if (imgPerfil) {
-            const Key = `${v4()}.jpg`
+            const ext = mimeToExt[imgPerfil.mimetype] || 'jpg'
+            const Key = `${v4()}.${ext}`
             this.s3.send(new DeleteObjectCommand({
                 Bucket: process.env.BUCKET_NAME,
                 Key: newAssociate.imgPerfil?.split('.jpg')[0]

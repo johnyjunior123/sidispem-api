@@ -34,12 +34,7 @@ export class AuthService {
         if (!userData) {
             throw new NotFoundException('Usuário não encontrado');
         }
-
         const user = new User(userData);
-        console.log('Senha fornecida:', password);
-        console.log('Hash armazenado:', user.password); // ou user.passwordHash
-        console.log('Comparação:', user.comparePassword(password));
-
         const isPasswordValid = await user.comparePassword(password);
         if (!isPasswordValid) {
             throw new UnauthorizedException('Senha incorreta');

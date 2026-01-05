@@ -2,9 +2,10 @@ import { Module } from "@nestjs/common";
 import { AppointmentController } from "src/controllers/appointment.controller";
 import { AppointmentService } from "src/services/appointment.service";
 import { PrismaService } from "src/services/prisma.service";
+import { AuthModule } from "./auth.module";
 
 @Module({
-    imports: [],
+    imports: [AuthModule],
     controllers: [AppointmentController],
     providers: [AppointmentService, PrismaService],
     exports: [AppointmentService]
